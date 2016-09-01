@@ -2,6 +2,10 @@
 
 let distance = require('..');
 
+let {
+    readFile
+} = require('mz/fs');
+
 let log = console.log; // eslint-disable-line
 
 let test = (left, right) => {
@@ -18,4 +22,11 @@ let test = (left, right) => {
 
 test('The default options copied by suite instances.', '(Object): The benchmark instance.');
 
-test();
+Promise.all([readFile(__dirname + '/fixture/test1/left.txt', 'utf-8'), readFile(__dirname + '/fixture/test1/right.txt', 'utf-8')]).then(([left, right]) => {
+    try {
+        // TODO fix
+        test(left, right);
+    } catch(err) {
+        console.log(err);
+    }
+});

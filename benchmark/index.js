@@ -15,11 +15,11 @@ let datas = [
 datas.forEach(([left, right]) => {
     suite.add(`${left} : ${right}`, () => {
         distance(left, right);
-    }).on('cycle', (event) => {
-        log(String(event.target));
     });
 });
 
-suite.run({
+suite.on('cycle', (event) => {
+    log(String(event.target));
+}).run({
     'async': true
 });

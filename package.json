@@ -1,6 +1,6 @@
 {
   "name": "levsimilarity",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "similarity based on Levenshtein distance",
   "main": "index.js",
   "scripts": {

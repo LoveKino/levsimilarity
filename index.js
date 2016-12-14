@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * expand Levenshtein distance
  *
@@ -13,37 +15,56 @@
  *
  * convert: d(ai, bj)
  *
- * TODO opt
+ * lev(s, t, i, j) = {
+ *      max(i, j)  if min(i,j) = 0
+ *      min {
+ *          lev(s, t, i - 1, j) + 1
+ *          lev(s, t, i, j - 1) + 1
+ *          lev(s, t, i - 1, j - 1) + convert(s, t, i, j)
+ *      }
+ * }
  */
 
-let lev = (a, b, i, j, cache, convert) => {
+/**
+ * http://www.levenshtein.net/
+ */
+module.exports = (s, t, convert) => {
     convert = convert || defConvertCost;
-    // cache first
-    if (cache[i] && cache[i][j] !== undefined) {
-        return cache[i][j];
-    }
-    let ret = null;
-    if (Math.min(i, j) === 0) {
-        ret = Math.max(i, j);
-    } else {
-        let convertCost = convert(a[i - 1], b[j - 1]);
+    let n = s.length,
+        m = t.length;
+    if (n === 0) return m;
+    if (m === 0) return n;
+    let matrix = []; // (n+1) * (m+1)
 
-        ret = Math.min(
-            lev(a, b, i - 1, j, cache, convert) + 1,
-            lev(a, b, i, j - 1, cache, convert) + 1,
-            lev(a, b, i - 1, j - 1, cache, convert) + convertCost
-        );
+    // init first row and first colume
+    for (let i = 0; i <= n; i++) {
+        if (!matrix[i]) matrix[i] = [];
+        matrix[i][0] = i;
     }
-    cache[i] = cache[i] || [];
-    cache[i][j] = ret;
-    return ret;
+
+    for (let i = 0; i <= m; i++) {
+        matrix[0][i] = i;
+    }
+
+    // rest
+    for (let i = 1; i <= n; i++) {
+        let itemI = s[i - 1];
+        for (let j = 1; j <= m; j++) {
+            //
+            let itemJ = t[j - 1];
+
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + convert(itemI, itemJ)
+            );
+        }
+    }
+
+    return matrix[n][m];
 };
 
 let defConvertCost = (item1, item2) => {
     if (item1 === item2) return 0;
     return 1;
-};
-
-module.exports = (str1, str2, convert) => {
-    return lev(str1.slice(0), str2.slice(0), str1.length, str2.length, [], convert);
 };

@@ -18,7 +18,15 @@ describe('distance', () => {
     });
 
     it('contain', () => {
-        let ret = distance('abc', `all\nabc\ndef\n`);
+        let ret = distance('abc', 'all\nabc\ndef\n');
         assert.equal(ret, 9);
+    });
+
+    it('convert', () => {
+        let ret = distance('abc', 'abd', (a, b) => {
+            if(a === b) return 0;
+            return 2;
+        });
+        assert.equal(ret, 2);
     });
 });
